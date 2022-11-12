@@ -1,18 +1,10 @@
-import {
-  Avatar,
-  Badge,
-  Button,
-  Heading,
-  Flex,
-  Text,
-  SkeletonText,
-  SkeletonCircle,
-} from "@chakra-ui/react";
+import { Avatar, Badge, Button, Heading, Flex, Text } from "@chakra-ui/react";
 import { getAvatarPlaceHolder } from "../../utils/avatar";
 import { Mentor } from "../../types/mentor";
 
 type Props = Omit<Mentor, "id" | "active"> & {
   onContactClick?: () => void;
+  hideContactAction?: boolean;
 };
 
 export default function MentorCard({
@@ -22,6 +14,7 @@ export default function MentorCard({
   tags,
   pictureUrl,
   onContactClick = () => null,
+  hideContactAction = false,
 }: Props) {
   return (
     <Flex
@@ -93,28 +86,30 @@ export default function MentorCard({
         </Flex>
       </div>
 
-      <Flex mt={5} justifyContent="center" width="100%">
-        <Button
-          mt={2}
-          width="60%"
-          fontSize={"xs"}
-          rounded="full"
-          bg={"purple.400"}
-          color={"white"}
-          boxShadow={
-            "0px 1px 25px -5px rgb(66 153 225 / 48%), 0 5px 5px -5px rgb(66 153 225 / 43%)"
-          }
-          _hover={{
-            bg: "purple.500",
-          }}
-          _focus={{
-            bg: "purple.500",
-          }}
-          onClick={onContactClick}
-        >
-          Contactar
-        </Button>
-      </Flex>
+      {!hideContactAction && (
+        <Flex mt={5} justifyContent="center" width="100%">
+          <Button
+            mt={2}
+            width="60%"
+            fontSize={"xs"}
+            rounded="full"
+            bg={"purple.400"}
+            color={"white"}
+            boxShadow={
+              "0px 1px 25px -5px rgb(66 153 225 / 48%), 0 5px 5px -5px rgb(66 153 225 / 43%)"
+            }
+            _hover={{
+              bg: "purple.500",
+            }}
+            _focus={{
+              bg: "purple.500",
+            }}
+            onClick={onContactClick}
+          >
+            Contactar
+          </Button>
+        </Flex>
+      )}
     </Flex>
   );
 }
