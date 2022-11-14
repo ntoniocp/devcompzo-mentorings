@@ -13,6 +13,7 @@ import {
 
 export const useAllMentors = () => {
   return useQuery("mentors", requestAllMentors, {
+    refetchOnWindowFocus: false,
     select: (res) => res.data?.data,
   });
 };
