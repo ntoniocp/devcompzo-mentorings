@@ -11,8 +11,10 @@ import {
   Mentor,
 } from "../../types/mentor";
 
+const queryKeyBase = "mentors";
+
 export const useAllMentors = () => {
-  return useQuery("mentors", requestAllMentors, {
+  return useQuery([queryKeyBase], requestAllMentors, {
     refetchOnWindowFocus: false,
     select: (res) => res.data?.data,
   });
@@ -23,7 +25,7 @@ export const useMentorProfile = (
   options?: Parameters<typeof useQuery>[2]
 ) => {
   return useQuery<Mentor>(
-    ["mentors", discordId],
+    [queryKeyBase, discordId],
     () => requestMentorByDiscordId(discordId).then((res) => res.data.data),
     {
       ...(options as any),
@@ -38,8 +40,8 @@ export const useCreateMentorProfile = () => {
     (data: CreatableMentorData) => requestMentorCreation(data),
     {
       onSuccess: (_, params) => {
-        queryClient.invalidateQueries("mentors");
-        queryClient.invalidateQueries(["mentors", params.discordId]);
+        queryClient.invalidateQueries([queryKeyBase]);
+        queryClient.invalidateQueries([queryKeyBase, params.discordId]);
       },
     }
   );
@@ -57,7 +59,7 @@ export const useUpdateMentorProfile = () => {
       newData: EditableMentorData;
     }) => requestMentorUpdate(discordId, newData),
     {
-      onSuccess: () => queryClient.invalidateQueries("mentors"),
+      onSuccess: () => queryClient.invalidateQueries([queryKeyBase]),
     }
   );
 };

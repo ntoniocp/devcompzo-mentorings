@@ -6,34 +6,37 @@ import MentorCard from "../MentorCard";
 import { useSession } from "next-auth/react";
 
 interface MentorsCardsListProps {
+  mentors: Mentor[];
+  isLoading?: boolean;
   onContactMentorClick?: (mentorDiscordId: string) => void;
   filterFunct?: (mentor: Mentor) => boolean;
   showActiveOnly?: boolean;
 }
 
 export default function MentorsCardsList({
+  mentors,
+  isLoading,
   onContactMentorClick = () => null,
   filterFunct = (mentor) => true,
   showActiveOnly = false,
 }: MentorsCardsListProps) {
   const { data: sessionData } = useSession();
-  const { data: mentors, isFetching } = useAllMentors();
 
   const filteredMentors = useMemo(() => {
-    let newMentors;
+    let newMentors: Mentor[] = [];
 
     if (filterFunct) {
-      newMentors = mentors?.filter(filterFunct);
+      newMentors = mentors.filter(filterFunct);
     }
 
     if (showActiveOnly) {
-      newMentors = newMentors?.filter((mentor) => mentor.active);
+      newMentors = newMentors.filter((mentor) => mentor.active);
     }
 
     return newMentors || [];
   }, [filterFunct, showActiveOnly, mentors]);
 
-  if (isFetching) {
+  if (isLoading) {
     return (
       <Flex justifyContent="center" alignItems="center" minHeight={300}>
         <Spinner size="xl" color="purple.400" />
@@ -50,11 +53,11 @@ export default function MentorsCardsList({
       wrap="wrap"
       justifyContent="center"
     >
-      {filteredMentors?.map((mentor: Mentor) => (
+      {filteredMentors.map((mentor: Mentor) => (
         <MentorCard
           key={mentor.id}
           {...mentor}
-          onContactClick={() => onContactMentorClick(mentor?.discordId || "")}
+          onContactClick={() => onContactMentorClick(mentor.discordId || "")}
           hideContactAction={!sessionData}
         />
       ))}

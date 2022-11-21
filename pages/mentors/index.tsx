@@ -1,16 +1,19 @@
 import { useCallback, useState } from "react";
 import { NextPage } from "next";
-import { Button, Flex, Heading, Input } from "@chakra-ui/react";
-import { getAllMentors } from "../../lib/mentors";
+import { Flex, Heading, Input } from "@chakra-ui/react";
 import ContactMentorModal from "../../components/ContactMentorModal";
 
 import { dehydrate, QueryClient } from "react-query";
 import MentorsCardsList from "../../components/MentorsCardsList";
 import { Mentor } from "../../types/mentor";
+import { useAllMentors } from "../../hooks/queries/mentor";
+import { requestAllMentors } from "../../http/mentor";
 
 const Mentors: NextPage = () => {
   const [discordIdToContact, setDiscordIdToContact] = useState<string>();
   const [searchText, setSearchText] = useState<string>("");
+  const { data: mentors, isLoading: isLoadingMentors } = useAllMentors();
+
   const closeContactModal = () => setDiscordIdToContact(undefined);
 
   const filterBySearch = useCallback(
@@ -46,7 +49,6 @@ const Mentors: NextPage = () => {
         Lista de mentores
       </Heading>
 
-      {/* <form> */}
       <Flex justifyContent="center" mt={5}>
         <Input
           type="search"
@@ -57,24 +59,11 @@ const Mentors: NextPage = () => {
           maxWidth="40%"
           onChange={(ev) => setSearchText(ev.target.value)}
         />
-        {/* <Button
-            type="submit"
-            ml={2}
-            bg={"purple.500"}
-            color="white"
-            _hover={{
-              bg: "purple.600",
-            }}
-            _focus={{
-              bg: "purple.600",
-            }}
-          >
-            Buscar
-          </Button> */}
       </Flex>
-      {/* </form> */}
 
       <MentorsCardsList
+        mentors={mentors || []}
+        isLoading={isLoadingMentors}
         onContactMentorClick={(discordId) => setDiscordIdToContact(discordId)}
         filterFunct={filterBySearch}
         showActiveOnly
@@ -94,7 +83,8 @@ const Mentors: NextPage = () => {
 
 export const getServerSideProps = async () => {
   const queryClient = new QueryClient();
-  await queryClient.prefetchQuery("mentors", getAllMentors);
+  await queryClient.prefetchQuery(["mentors"], requestAllMentors);
+
   return { props: { dehydratedState: dehydrate(queryClient) } };
 };
 

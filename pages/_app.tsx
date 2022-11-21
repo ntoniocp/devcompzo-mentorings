@@ -11,6 +11,7 @@ import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient());
+  const { dehydratedState, session } = pageProps;
 
   return (
     <>
@@ -18,8 +19,8 @@ function MyApp({ Component, pageProps }: AppProps) {
         <title>Mentorías</title>
       </Head>
       <QueryClientProvider client={queryClient}>
-        <Hydrate state={pageProps.dehydratedState}>
-          <SessionProvider session={pageProps.session}>
+        <Hydrate state={dehydratedState}>
+          <SessionProvider session={session}>
             <ChakraProvider theme={theme}>
               <NavbarFooterLayout>
                 <Component {...pageProps} />
