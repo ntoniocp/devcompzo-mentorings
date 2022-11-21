@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { Flex, Spinner } from "@chakra-ui/react";
-import { useAllMentors } from "../../hooks/queries/mentor";
 import { Mentor } from "../../types/mentor";
 import MentorCard from "../MentorCard";
 import { useSession } from "next-auth/react";
