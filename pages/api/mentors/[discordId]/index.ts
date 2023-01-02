@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getToken } from "next-auth/jwt";
-import { JWT_SECRET } from "../../../config/auth";
-import { getMentorByDiscordId, updateMentor } from "../../../lib/mentors";
-import { Mentor } from "../../../types/mentor";
-import { Error } from "../../../types/api";
+import { JWT_SECRET } from "../../../../config/auth";
+import { getMentorByDiscordId, updateMentor } from "../../../../lib/mentors";
+import { Mentor } from "../../../../types/mentor";
+import { Error } from "../../../../types/api";
 
 export default async function handler(
   req: NextApiRequest,

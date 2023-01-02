@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Button,
   Flex,
@@ -6,7 +6,6 @@ import {
   FormHelperText,
   FormLabel,
   Input,
-  Switch,
   Tag,
   TagCloseButton,
   TagLabel,
@@ -15,7 +14,7 @@ import {
 import { useForm, useFieldArray } from "react-hook-form";
 import { EditableMentorData } from "../../types/mentor";
 import { getAvatarPlaceHolder } from "../../utils/avatar";
-import AvatarSelector from "../AvatarSelector";
+import { AvatarSelector } from "../AvatarSelector";
 
 export type FormValues = Omit<EditableMentorData, "tags" | "active"> & {
   tags: { name: string }[];
@@ -23,7 +22,7 @@ export type FormValues = Omit<EditableMentorData, "tags" | "active"> & {
 };
 
 interface Props {
-  onSubmit: (values: FormValues) => void;
+  onSubmit: (values: FormValues, avatar?: File) => void;
   initialValues?: EditableMentorData;
   formId?: string;
   disableAllFields?: boolean;
@@ -35,14 +34,16 @@ export default function UserForm({
   onSubmit = () => null,
   disableAllFields = false,
 }: Props) {
+  const [avatarFile, setAvatarFile] = useState<File>();
   const [techArea, setTechArea] = useState("");
   const mappedTags = initialValues?.tags?.map((tag) => ({ name: tag }));
 
-  const { handleSubmit, register, control, watch } = useForm<FormValues>({
-    defaultValues: initialValues
-      ? { ...initialValues, tags: mappedTags || [] }
-      : undefined,
-  });
+  const { handleSubmit, register, control, setValue, watch } =
+    useForm<FormValues>({
+      defaultValues: initialValues
+        ? { ...initialValues, tags: mappedTags || [] }
+        : undefined,
+    });
 
   const { fields, prepend, remove } = useFieldArray({
     name: "tags",
@@ -60,22 +61,35 @@ export default function UserForm({
     }
   };
 
-  /** TODO: Hacer el manejo de cambio de pictureUrl */
-  const picture = null;
+  const handleSubmitForm = (formValues: FormValues) => {
+    onSubmit(formValues, avatarFile);
+  };
+
+  const pictureUrl = watch("pictureUrl");
 
   return (
-    <form id={formId} onSubmit={handleSubmit(onSubmit)}>
+    <form id={formId} onSubmit={handleSubmit(handleSubmitForm)}>
       <AvatarSelector
         mb={4}
         marginLeft="50%"
         transform="translateX(-50%)"
         avatarProps={{
           size: "lg",
-          src: picture || getAvatarPlaceHolder(initialValues?.fullName || ""),
+          src:
+            pictureUrl || getAvatarPlaceHolder(initialValues?.fullName || ""),
           marginLeft: "50%",
           transform: "translateX(-50%)",
         }}
-        disabled={disableAllFields || true} // Se hardcodea a true mientras no se maneje la subida de la foto
+        disabled={disableAllFields}
+        onChange={(avatarData) => {
+          const { imageUrl, imageFilePreviewSrc, imageFile } = avatarData;
+
+          if (imageUrl) setValue("pictureUrl", imageUrl);
+          else if (imageFilePreviewSrc && imageFile) {
+            setValue("pictureUrl", imageFilePreviewSrc);
+            setAvatarFile(imageFile);
+          }
+        }}
       />
 
       <FormControl id="fullName" mb={4} isRequired>

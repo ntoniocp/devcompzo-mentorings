@@ -11,7 +11,10 @@ import { getAvatarPlaceHolder } from "../../utils/avatar";
 import { useEditProfileDrawer } from "../Layouts/EditProfileDrawerLayout";
 
 interface Props {
-  userData: any;
+  userData: {
+    name: string;
+    image?: string;
+  };
   onSignOut?: () => void;
 }
 

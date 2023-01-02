@@ -4,7 +4,6 @@ import { useSession, signIn } from "next-auth/react";
 import { Box, Button, Flex, Heading } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEditProfileDrawer } from "../components/Layouts/EditProfileDrawerLayout";
-import { AppContext } from "next/app";
 
 const About: NextPage = () => {
   const router = useRouter();

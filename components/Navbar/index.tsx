@@ -12,6 +12,8 @@ import {
 import DiscordIcon from "../../components/Icons/DiscordIcon";
 import UserMenu from "../../components/UserMenu";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useMentorProfile } from "../../hooks/queries/mentor";
+import { SessionWithDiscordId } from "../../types/auth";
 
 type NavLink = { label: string; href: string };
 
@@ -28,7 +30,14 @@ const NAV_LINKS: NavLink[] = [
 
 export default function Navbar() {
   const { push, pathname } = useRouter();
-  const { data } = useSession();
+  const { data: session } = useSession();
+
+  const { data: mentorData } = useMentorProfile(
+    (session as SessionWithDiscordId)?.user.id || "",
+    {
+      enabled: Boolean(session),
+    }
+  );
 
   return (
     <Flex justifyContent="space-between" alignItems="center">
@@ -54,8 +63,14 @@ export default function Navbar() {
           </WrapItem>
         ))}
         <WrapItem>
-          {data ? (
-            <UserMenu userData={data.user} onSignOut={() => signOut()} />
+          {session ? (
+            <UserMenu
+              userData={{
+                name: mentorData?.fullName || "",
+                image: mentorData?.pictureUrl,
+              }}
+              onSignOut={() => signOut()}
+            />
           ) : (
             <Button
               colorScheme="purple"

@@ -66,6 +66,7 @@ export default function ContactMentorModal({
 
   return (
     <Modal isOpen={isOpen} onClose={() => null}>
+      <ModalCloseButton color="white" onClick={onCloseClick} />
       <ModalOverlay backgroundColor="rgba(255, 255, 255, 0.09)" />
       <ModalContent
         border="1px solid #3c3c3c"

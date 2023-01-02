@@ -23,6 +23,7 @@ import { SessionWithDiscordId } from "../../types/auth";
 import {
   useCreateMentorProfile,
   useMentorProfile,
+  useUpdateMentorAvatar,
   useUpdateMentorProfile,
 } from "../../hooks/queries/mentor";
 
@@ -48,6 +49,7 @@ export default function EditProfileDrawer({ isOpen, onCloseClick }: Props) {
 
   const createMutation = useCreateMentorProfile();
   const updateMutation = useUpdateMentorProfile();
+  const avatarMutation = useUpdateMentorAvatar();
 
   const [active, setActive] = useBoolean(false);
   const [hasClickedCreate, setHasClickedCreate] = useState(false);
@@ -61,7 +63,10 @@ export default function EditProfileDrawer({ isOpen, onCloseClick }: Props) {
     onCloseClick();
   };
 
-  const createMentorProfile = async (profileData: ProfileFormValues) => {
+  const createMentorProfile = async (
+    profileData: ProfileFormValues,
+    avatar?: File
+  ) => {
     const data = {
       ...profileData,
       tags: profileData.tags.map((t) => t.name),
@@ -70,10 +75,22 @@ export default function EditProfileDrawer({ isOpen, onCloseClick }: Props) {
       discordHandle: (session as SessionWithDiscordId)["user"]["name"] || "",
     };
 
-    createMutation.mutate(data);
+    createMutation.mutate(data, {
+      onSuccess: () => {
+        if (avatar && data.discordId) {
+          avatarMutation.mutate({
+            discordId: data.discordId,
+            avatarFile: avatar,
+          });
+        }
+      },
+    });
   };
 
-  const updateMentorProfile = async (profileData: ProfileFormValues) => {
+  const updateMentorProfile = async (
+    profileData: ProfileFormValues,
+    avatar?: File
+  ) => {
     const discordId = (session as SessionWithDiscordId)["user"]["id"] || "";
 
     const newData = {
@@ -82,7 +99,16 @@ export default function EditProfileDrawer({ isOpen, onCloseClick }: Props) {
       active,
     };
 
-    updateMutation.mutate({ discordId, newData });
+    updateMutation.mutate(
+      { discordId, newData },
+      {
+        onSuccess: () => {
+          if (avatar) {
+            avatarMutation.mutate({ discordId, avatarFile: avatar });
+          }
+        },
+      }
+    );
   };
 
   const enableForm = useMemo(() => {

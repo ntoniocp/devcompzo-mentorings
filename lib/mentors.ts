@@ -46,7 +46,7 @@ export async function createMentor(data: Mentor) {
   return dbClient.query(Create(Collection("mentors"), { data }));
 }
 
-export async function updateMentor(discordId: string, data: Mentor) {
+export async function updateMentor(discordId: string, data: Partial<Mentor>) {
   const originalMentor = await getMentorByDiscordId(discordId);
 
   return dbClient.query(
