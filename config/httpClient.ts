@@ -4,7 +4,7 @@ export function httpClient<ResponseType>(
   endpoint: string,
   { body, ...config }: Config | undefined = {}
 ) {
-  const baseURL = "http://localhost:3000/api";
+  const baseURL = "/api";
 
   const finalConfig: RequestInit = {
     method: config?.method ?? "GET",
