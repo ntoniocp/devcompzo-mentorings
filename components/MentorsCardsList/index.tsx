@@ -16,7 +16,7 @@ export default function MentorsCardsList({
   mentors,
   isLoading,
   onContactMentorClick = () => null,
-  filterFunct = (mentor) => true,
+  filterFunct = () => true,
   showActiveOnly = false,
 }: MentorsCardsListProps) {
   const { data: sessionData } = useSession();

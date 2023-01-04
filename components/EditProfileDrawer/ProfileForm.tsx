@@ -14,7 +14,7 @@ import {
 import { useForm, useFieldArray } from "react-hook-form";
 import { EditableMentorData } from "../../types/mentor";
 import { getAvatarPlaceHolder } from "../../utils/avatar";
-import { AvatarSelector } from "../AvatarSelector";
+import { AvatarChangeEvent, AvatarSelector } from "../AvatarSelector";
 
 export type FormValues = Omit<EditableMentorData, "tags" | "active"> & {
   tags: { name: string }[];
@@ -61,6 +61,17 @@ export default function UserForm({
     }
   };
 
+  const handleAvatarChange = (avatarData: AvatarChangeEvent) => {
+    const { imageUrl, imageFilePreviewSrc, imageFile } = avatarData;
+
+    if (imageUrl) {
+      setValue("pictureUrl", imageUrl);
+    } else if (imageFilePreviewSrc && imageFile) {
+      setValue("pictureUrl", imageFilePreviewSrc);
+      setAvatarFile(imageFile);
+    }
+  };
+
   const handleSubmitForm = (formValues: FormValues) => {
     onSubmit(formValues, avatarFile);
   };
@@ -81,15 +92,7 @@ export default function UserForm({
           transform: "translateX(-50%)",
         }}
         disabled={disableAllFields}
-        onChange={(avatarData) => {
-          const { imageUrl, imageFilePreviewSrc, imageFile } = avatarData;
-
-          if (imageUrl) setValue("pictureUrl", imageUrl);
-          else if (imageFilePreviewSrc && imageFile) {
-            setValue("pictureUrl", imageFilePreviewSrc);
-            setAvatarFile(imageFile);
-          }
-        }}
+        onChange={handleAvatarChange}
       />
 
       <FormControl id="fullName" mb={4} isRequired>

@@ -11,9 +11,9 @@ import {
 } from "@chakra-ui/react";
 import DiscordIcon from "../../components/Icons/DiscordIcon";
 import UserMenu from "../../components/UserMenu";
-import { signIn, signOut, useSession } from "next-auth/react";
-import { useMentorProfile } from "../../hooks/queries/mentor";
-import { SessionWithDiscordId } from "../../types/auth";
+import { signIn, signOut } from "next-auth/react";
+import { useLoggedUserMentorProfile } from "../../providers/UserSessionProvider";
+import { useSession } from "../../hooks/useSession";
 
 type NavLink = { label: string; href: string };
 
@@ -31,13 +31,7 @@ const NAV_LINKS: NavLink[] = [
 export default function Navbar() {
   const { push, pathname } = useRouter();
   const { data: session } = useSession();
-
-  const { data: mentorData } = useMentorProfile(
-    (session as SessionWithDiscordId)?.user.id || "",
-    {
-      enabled: Boolean(session),
-    }
-  );
+  const { mentorData } = useLoggedUserMentorProfile();
 
   return (
     <Flex justifyContent="space-between" alignItems="center">

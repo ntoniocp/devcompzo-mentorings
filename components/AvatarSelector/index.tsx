@@ -6,16 +6,15 @@ import {
   ImageMeta,
 } from "./ImageOriginSelectionModal";
 
+export type AvatarChangeEvent = {
+  imageUrl?: string;
+  imageFile?: File;
+  imageFilePreviewSrc?: string;
+};
+
 interface Props extends StyleProps {
   avatarProps?: AvatarProps;
-  onChange?: ({
-    imageUrl,
-    imageFile,
-  }: {
-    imageUrl?: string;
-    imageFile?: File;
-    imageFilePreviewSrc?: string;
-  }) => void;
+  onChange?: (changeEvent: AvatarChangeEvent) => void;
   disabled?: boolean;
 }
 

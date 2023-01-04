@@ -8,44 +8,32 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
-  Flex,
   FormControl,
   FormLabel,
-  Spinner,
   Switch,
   useBoolean,
 } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
 import ProfileForm, { FormValues as ProfileFormValues } from "./ProfileForm";
 import NotRegisteredMsg from "./NotRegisteredMsg";
-import { SessionWithDiscordId } from "../../types/auth";
 
 import {
   useCreateMentorProfile,
-  useMentorProfile,
   useUpdateMentorAvatar,
   useUpdateMentorProfile,
 } from "../../hooks/queries/mentor";
-
+import { useLoggedUserMentorProfile } from "../../providers/UserSessionProvider";
+import { useSession } from "../../hooks/useSession";
 interface Props {
   isOpen: boolean;
   onCloseClick: () => void;
 }
 
-export default function EditProfileDrawer({ isOpen, onCloseClick }: Props) {
+export default function EditProfileDrawer({
+  isOpen = false,
+  onCloseClick,
+}: Props) {
   const { data: session } = useSession();
-
-  const {
-    data: mentorProfile,
-    isLoading: isCheckingProfile,
-    error: profileSearchError,
-    remove: removeMentorProfile,
-  } = useMentorProfile((session as SessionWithDiscordId)?.user.id || "", {
-    enabled: isOpen,
-    retry: (failureCount, error) => {
-      return (error as any).response.status === 404 ? false : failureCount < 3;
-    },
-  });
+  const { mentorData: mentorProfile } = useLoggedUserMentorProfile();
 
   const createMutation = useCreateMentorProfile();
   const updateMutation = useUpdateMentorProfile();
@@ -58,7 +46,6 @@ export default function EditProfileDrawer({ isOpen, onCloseClick }: Props) {
     createMutation.isLoading || updateMutation.isLoading;
 
   const handleClose = () => {
-    removeMentorProfile();
     setHasClickedCreate(false);
     onCloseClick();
   };
@@ -71,8 +58,8 @@ export default function EditProfileDrawer({ isOpen, onCloseClick }: Props) {
       ...profileData,
       tags: profileData.tags.map((t) => t.name),
       active,
-      discordId: (session as SessionWithDiscordId)["user"]["id"],
-      discordHandle: (session as SessionWithDiscordId)["user"]["name"] || "",
+      discordId: session?.user.id || "",
+      discordHandle: session?.user.id || "",
     };
 
     createMutation.mutate(data, {
@@ -91,7 +78,7 @@ export default function EditProfileDrawer({ isOpen, onCloseClick }: Props) {
     profileData: ProfileFormValues,
     avatar?: File
   ) => {
-    const discordId = (session as SessionWithDiscordId)["user"]["id"] || "";
+    const discordId = mentorProfile?.discordId || "";
 
     const newData = {
       ...profileData,
@@ -111,25 +98,11 @@ export default function EditProfileDrawer({ isOpen, onCloseClick }: Props) {
     );
   };
 
-  const enableForm = useMemo(() => {
-    // is fetching mentor profile
-    if (isCheckingProfile) return false;
-
-    // is showing message indicating user to create profile
-    if (profileSearchError && !hasClickedCreate) return false;
-
-    // if there's a mentor profile in the db or the user clicked create
-    return true;
-  }, [isCheckingProfile, profileSearchError, hasClickedCreate]);
-
-  const showNotRegisteredMsg =
-    !isCheckingProfile && profileSearchError && !hasClickedCreate;
-
   useEffect(() => {
-    if (mentorProfile?.active) {
-      setActive.on();
-    } else {
+    if (mentorProfile && !mentorProfile.active) {
       setActive.off();
+    } else {
+      setActive.on();
     }
   }, [mentorProfile, setActive]);
 
@@ -138,32 +111,16 @@ export default function EditProfileDrawer({ isOpen, onCloseClick }: Props) {
       <DrawerOverlay bg="rgba(255, 255, 255, 0.05)" />
       <DrawerContent bg="#25282f">
         <DrawerCloseButton onClick={handleClose} color="white" />
-        {!isCheckingProfile && mentorProfile && (
+        {mentorProfile && (
           <DrawerHeader color="white">Edita tu perfil</DrawerHeader>
         )}
 
         <DrawerBody px={10}>
-          {isCheckingProfile && (
-            <Flex
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              height="100%"
-            >
-              <Spinner
-                size="xl"
-                color="purple.500"
-                thickness="4px"
-                speed="0.4s"
-              />
-            </Flex>
-          )}
-          {showNotRegisteredMsg && (
+          {!hasClickedCreate && !mentorProfile ? (
             <NotRegisteredMsg
               onRegisterClick={() => setHasClickedCreate(true)}
             />
-          )}
-          {enableForm && (
+          ) : (
             <>
               <FormControl display="flex" alignItems="center" mb={9} mt={2}>
                 <Switch
@@ -183,7 +140,7 @@ export default function EditProfileDrawer({ isOpen, onCloseClick }: Props) {
                 </FormLabel>
               </FormControl>
               <ProfileForm
-                initialValues={mentorProfile || undefined}
+                initialValues={mentorProfile}
                 formId="profile-form"
                 onSubmit={
                   hasClickedCreate && !mentorProfile
@@ -196,7 +153,7 @@ export default function EditProfileDrawer({ isOpen, onCloseClick }: Props) {
           )}
         </DrawerBody>
 
-        {enableForm && (
+        {(hasClickedCreate || mentorProfile) && (
           <DrawerFooter>
             <Button
               variant="outline"

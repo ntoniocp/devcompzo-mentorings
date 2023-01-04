@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { ObjectValues } from "../../types/helpers";
 import useFileExplorer from "../../hooks/useFileExplorer";
-import { useSession } from "next-auth/react";
+import { useSession } from "../../hooks/useSession";
 import { getUserCurrentDiscordAvatar } from "../../http/discord";
 
 const ImageOriginTypes = {
@@ -45,7 +45,7 @@ export function ImageOriginSelectionModal({
   onClose = () => null,
   onImageOriginSave = () => null,
 }: Props) {
-  const session = useSession() as any;
+  const session = useSession();
 
   const [isLoadingLocalPreview, setIsLoadingLocalPreview] = useState(false);
   const [localSelectedFileSrc, setLocalSelectedFileSrc] = useState<string>();
@@ -88,7 +88,7 @@ export function ImageOriginSelectionModal({
     if (selectedImageOrigin === "discord") {
       onImageOriginSave({
         origin: "discord",
-        avatarUrl: session.data?.user.image,
+        avatarUrl: session.data?.user.image || "",
       });
     }
 
@@ -102,7 +102,7 @@ export function ImageOriginSelectionModal({
       try {
         const {
           data: { avatarUrl },
-        } = await getUserCurrentDiscordAvatar(session.data?.user?.id);
+        } = await getUserCurrentDiscordAvatar(session.data?.user?.id || "");
 
         setCurrentDiscordImage(avatarUrl);
       } catch (err) {
