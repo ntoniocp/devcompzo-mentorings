@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { Session } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import {
   DISCORD_CLIENT_ID,
@@ -16,7 +16,7 @@ export default NextAuth({
     }),
   ],
   callbacks: {
-    async session({ session, token }) {
+    async session({ session, token }): Promise<Session> {
       const { expires, user } = session;
       return { expires, user: { ...user, id: token.sub } };
     },

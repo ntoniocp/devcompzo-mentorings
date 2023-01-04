@@ -1,4 +1,4 @@
-import NextAuth, { DefaultSession } from "next-auth";
+import NextAuth, { DefaultSession, ISODateString } from "next-auth";
 
 declare module "next-auth" {
   /**
@@ -6,7 +6,8 @@ declare module "next-auth" {
    */
   interface Session {
     user: {
-      id: string;
+      id?: string;
     } & DefaultSession["user"];
+    expires: DefaultSession["expires"];
   }
 }
