@@ -4,7 +4,6 @@ import {
   DISCORD_CLIENT_ID,
   DISCORD_CLIENT_SECRET,
 } from "../../../config/discordAPI";
-import { SessionWithDiscordId } from "../../../types/auth";
 
 export default NextAuth({
   session: {
@@ -17,7 +16,7 @@ export default NextAuth({
     }),
   ],
   callbacks: {
-    async session({ session, token }): Promise<SessionWithDiscordId> {
+    async session({ session, token }) {
       const { expires, user } = session;
       return { expires, user: { ...user, id: token.sub } };
     },

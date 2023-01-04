@@ -13,6 +13,7 @@ import {
   Switch,
   useBoolean,
 } from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
 import ProfileForm, { FormValues as ProfileFormValues } from "./ProfileForm";
 import NotRegisteredMsg from "./NotRegisteredMsg";
 
@@ -22,7 +23,6 @@ import {
   useUpdateMentorProfile,
 } from "../../hooks/queries/mentor";
 import { useLoggedUserMentorProfile } from "../../providers/UserSessionProvider";
-import { useSession } from "../../hooks/useSession";
 interface Props {
   isOpen: boolean;
   onCloseClick: () => void;
@@ -58,8 +58,8 @@ export default function EditProfileDrawer({
       ...profileData,
       tags: profileData.tags.map((t) => t.name),
       active,
-      discordId: session?.user.id || "",
-      discordHandle: session?.user.id || "",
+      discordId: session?.user?.id || "",
+      discordHandle: session?.user?.id || "",
     };
 
     createMutation.mutate(data, {

@@ -9,9 +9,9 @@ import {
   Avatar,
   Button,
 } from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
 import { ObjectValues } from "../../types/helpers";
 import useFileExplorer from "../../hooks/useFileExplorer";
-import { useSession } from "../../hooks/useSession";
 import { getUserCurrentDiscordAvatar } from "../../http/discord";
 
 const ImageOriginTypes = {

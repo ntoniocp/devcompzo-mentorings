@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { Flex, Spinner } from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
 import { Mentor } from "../../types/mentor";
 import MentorCard from "../MentorCard";
-import { useSession } from "next-auth/react";
 
 interface MentorsCardsListProps {
   mentors: Mentor[];

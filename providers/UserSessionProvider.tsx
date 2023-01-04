@@ -1,6 +1,6 @@
 import { useContext, createContext, ReactNode } from "react";
+import { useSession } from "next-auth/react";
 import { useMentorProfile } from "../hooks/queries/mentor";
-import { useSession } from "../hooks/useSession";
 import { Mentor } from "../types/mentor";
 
 interface LoggedUserMentorProfileContext {
@@ -20,7 +20,7 @@ export function LoggedUserMentorProfileProvider({
   children,
 }: LoggedUserMentorProfileProviderProps) {
   const { data: session } = useSession();
-  const { data: mentorData } = useMentorProfile(session?.user.id || "", {
+  const { data: mentorData } = useMentorProfile(session?.user?.id || "", {
     enabled: Boolean(session?.user),
   });
 

@@ -9,11 +9,11 @@ import {
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
 import DiscordIcon from "../../components/Icons/DiscordIcon";
 import UserMenu from "../../components/UserMenu";
 import { signIn, signOut } from "next-auth/react";
 import { useLoggedUserMentorProfile } from "../../providers/UserSessionProvider";
-import { useSession } from "../../hooks/useSession";
 
 type NavLink = { label: string; href: string };
 

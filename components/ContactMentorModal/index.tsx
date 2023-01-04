@@ -12,10 +12,9 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
+import { useSession } from "next-auth/react";
 import PaperPlaneIcon from "../Icons/PaperPlaneIcon";
 import { sendDiscordMessage } from "../../http/message";
-import { useSession } from "next-auth/react";
-import { SessionWithDiscordId } from "../../types/auth";
 import { formatDiscordMessage } from "../../utils/message";
 
 const DEFAULT_VALUES = {
@@ -52,7 +51,7 @@ export default function ContactMentorModal({
     try {
       const signedMessage = formatDiscordMessage(
         message,
-        (session as SessionWithDiscordId)["user"]["name"] || ""
+        session?.user?.name || ""
       );
 
       await sendDiscordMessage(discordId, signedMessage);
