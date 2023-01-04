@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  UseQueryOptions,
+} from "react-query";
 import {
   requestAllMentors,
   requestMentorByDiscordId,
@@ -23,10 +28,14 @@ export const useAllMentors = () => {
 
 export const useMentorProfile = (
   discordId: string,
-  options?: Parameters<typeof useQuery>[2]
+  options?: UseQueryOptions<Mentor>
 ) => {
-  return useQuery<Mentor>([queryKeyBase, discordId], () =>
-    requestMentorByDiscordId(discordId).then((res) => res.data)
+  return useQuery<Mentor>(
+    [queryKeyBase, discordId],
+    () => requestMentorByDiscordId(discordId).then((res) => res.data),
+    {
+      ...options,
+    }
   );
 };
 
