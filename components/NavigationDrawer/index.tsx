@@ -56,8 +56,6 @@ export function NavigationDrawer({
     "purple.400",
   ]);
 
-  console.log({ purple300 });
-
   const handleEdit = () => {
     toggleEditProfileDrawer();
     handleClose();
