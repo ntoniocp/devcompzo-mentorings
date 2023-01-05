@@ -30,6 +30,7 @@ export default function MentorCard({
       boxShadow={"sm"}
       p={6}
       textAlign={"center"}
+      minWidth={280}
     >
       <div>
         <Avatar

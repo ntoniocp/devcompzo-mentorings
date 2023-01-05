@@ -56,8 +56,10 @@ const Mentors: NextPage = () => {
           borderColor="#3c3c3c"
           backgroundColor="rgba(0, 0, 0, 0.15)"
           color="white"
-          maxWidth="40%"
+          width="clamp(270px, 40% ,480px)"
           onChange={(ev) => setSearchText(ev.target.value)}
+          placeholder="Ingresa tu búsqueda"
+          textAlign="center"
         />
       </Flex>
 
